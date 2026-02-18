@@ -1,42 +1,41 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Simple Web Proxy</title>
+    <title>Iframe Proxy</title>
     <style>
         body {
             font-family: Arial;
             text-align: center;
-            background: #f4f4f4;
         }
         input {
             width: 60%;
             padding: 10px;
         }
-        button {
-            padding: 10px 20px;
-        }
-        .content {
+        iframe {
+            width: 90%;
+            height: 600px;
             margin-top: 20px;
             border: 1px solid #ccc;
-            padding: 10px;
-            background: white;
-            height: 500px;
-            overflow: auto;
         }
     </style>
 </head>
 <body>
 
-    <h1>Simple Web Proxy</h1>
+    <h1>Simple Embed Proxy</h1>
 
-    <form method="POST">
-        <input type="text" name="url" placeholder="Enter website URL">
-        <button type="submit">Go</button>
-    </form>
+    <input type="text" id="urlInput" placeholder="Enter website URL">
+    <button onclick="loadSite()">Go</button>
 
-    <div class="content">
-        {{ content|safe }}
-    </div>
+    <br>
+
+    <iframe id="proxyFrame"></iframe>
+
+    <script>
+        function loadSite() {
+            let url = document.getElementById("urlInput").value;
+            document.getElementById("proxyFrame").src = "/proxy?url=" + encodeURIComponent(url);
+        }
+    </script>
 
 </body>
 </html>
