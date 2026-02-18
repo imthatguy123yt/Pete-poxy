@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Iframe Proxy</title>
+    <title>Simple Embed Proxy</title>
     <style>
         body {
             font-family: Arial;
@@ -10,6 +10,9 @@
         input {
             width: 60%;
             padding: 10px;
+        }
+        button {
+            padding: 10px 20px;
         }
         iframe {
             width: 90%;
@@ -33,7 +36,9 @@
     <script>
         function loadSite() {
             let url = document.getElementById("urlInput").value;
-            document.getElementById("proxyFrame").src = "/proxy?url=" + encodeURIComponent(url);
+            // Use full URL to avoid relative path issues
+            document.getElementById("proxyFrame").src =
+                window.location.origin + "/proxy?url=" + encodeURIComponent(url);
         }
     </script>
 
