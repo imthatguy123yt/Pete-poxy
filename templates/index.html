@@ -1,46 +1,162 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Simple Embed Proxy</title>
+    <title>Advanced Web Proxy</title>
     <style>
         body {
-            font-family: Arial;
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #0f172a;
+            color: white;
             text-align: center;
         }
+
+        header {
+            padding: 20px;
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .search-container {
+            margin: 20px auto;
+            width: 80%;
+            max-width: 700px;
+            display: flex;
+            justify-content: center;
+        }
+
         input {
-            width: 60%;
-            padding: 10px;
+            flex: 1;
+            padding: 12px;
+            font-size: 16px;
+            border-radius: 8px 0 0 8px;
+            border: none;
+            outline: none;
         }
+
         button {
-            padding: 10px 20px;
+            padding: 12px 20px;
+            font-size: 16px;
+            border: none;
+            cursor: pointer;
+            background: #3b82f6;
+            color: white;
+            border-radius: 0 8px 8px 0;
+            transition: 0.3s;
         }
+
+        button:hover {
+            background: #2563eb;
+        }
+
         iframe {
-            width: 90%;
-            height: 600px;
+            width: 95%;
+            height: 70vh;
+            border: none;
             margin-top: 20px;
-            border: 1px solid #ccc;
+            border-radius: 12px;
+            background: white;
+        }
+
+        .loader {
+            display: none;
+            margin-top: 10px;
+        }
+
+        .spinner {
+            border: 5px solid #1e293b;
+            border-top: 5px solid #3b82f6;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .nav-buttons {
+            margin-top: 10px;
+        }
+
+        .nav-buttons button {
+            border-radius: 8px;
+            margin: 0 5px;
+        }
+
+        footer {
+            margin-top: 15px;
+            font-size: 12px;
+            opacity: 0.6;
         }
     </style>
 </head>
 <body>
 
-    <h1>Simple Embed Proxy</h1>
+<header>🚀 Advanced Web Proxy</header>
 
-    <input type="text" id="urlInput" placeholder="Enter website URL">
+<div class="search-container">
+    <input type="text" id="urlInput" placeholder="Enter website (example.com)">
     <button onclick="loadSite()">Go</button>
+</div>
 
-    <br>
+<div class="nav-buttons">
+    <button onclick="goBack()">⬅ Back</button>
+    <button onclick="goForward()">➡ Forward</button>
+</div>
 
-    <iframe id="proxyFrame"></iframe>
+<div class="loader" id="loader">
+    <div class="spinner"></div>
+</div>
 
-    <script>
-        function loadSite() {
-            let url = document.getElementById("urlInput").value;
-            // Use full URL to avoid relative path issues
-            document.getElementById("proxyFrame").src =
-                window.location.origin + "/proxy?url=" + encodeURIComponent(url);
+<iframe id="proxyFrame"></iframe>
+
+<footer>
+    Experimental proxy for learning purposes
+</footer>
+
+<script>
+    const iframe = document.getElementById("proxyFrame");
+    const loader = document.getElementById("loader");
+    const historyStack = [];
+    let historyIndex = -1;
+
+    function loadSite(url=null) {
+        if (!url) {
+            url = document.getElementById("urlInput").value;
         }
-    </script>
+        if (!url) return;
+
+        loader.style.display = "block";
+        iframe.onload = function() { loader.style.display = "none"; };
+
+        iframe.src = window.location.origin + "/proxy?url=" + encodeURIComponent(url);
+
+        // Manage history
+        if (historyIndex === -1 || historyStack[historyIndex] !== url) {
+            historyStack.splice(historyIndex+1);
+            historyStack.push(url);
+            historyIndex++;
+        }
+    }
+
+    function goBack() {
+        if (historyIndex > 0) {
+            historyIndex--;
+            loadSite(historyStack[historyIndex]);
+        }
+    }
+
+    function goForward() {
+        if (historyIndex < historyStack.length-1) {
+            historyIndex++;
+            loadSite(historyStack[historyIndex]);
+        }
+    }
+</script>
 
 </body>
 </html>
