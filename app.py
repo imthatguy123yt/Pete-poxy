@@ -1,24 +1,32 @@
-from flask import Flask, request, render_template
+from flask import Flask, request, render_template, Response
 import requests
 
 app = Flask(__name__)
 
-@app.route("/", methods=["GET", "POST"])
+@app.route("/", methods=["GET"])
 def home():
-    content = ""
-    if request.method == "POST":
-        url = request.form.get("url")
+    return render_template("index.html")
 
-        if not url.startswith("http"):
-            url = "http://" + url
+@app.route("/proxy")
+def proxy():
+    url = request.args.get("url")
 
-        try:
-            response = requests.get(url)
-            content = response.text
-        except:
-            content = "Error fetching the website."
+    if not url:
+        return "No URL provided."
 
-    return render_template("index.html", content=content)
+    if not url.startswith("http"):
+        url = "http://" + url
+
+    try:
+        r = requests.get(url)
+        excluded_headers = ["content-encoding", "content-length", "transfer-encoding", "connection"]
+        headers = [(name, value) for (name, value) in r.raw.headers.items()
+                   if name.lower() not in excluded_headers]
+
+        return Response(r.content, r.status_code, headers)
+
+    except:
+        return "Error loading site."
 
 if __name__ == "__main__":
     app.run(debug=True)
